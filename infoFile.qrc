@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/info">
+        <file>about.txt</file>
+        <file>guid.txt</file>
+    </qresource>
+</RCC>
