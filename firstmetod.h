@@ -17,6 +17,8 @@ public:
     explicit firstmetod(QWidget *parent = nullptr);
     ~firstmetod();
 
+    double fileprocessing (QString filelocation);
+
 private slots:
 
     void on_DirectoryOpen_clicked();

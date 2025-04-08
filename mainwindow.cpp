@@ -78,10 +78,6 @@ void MainWindow::on_Button1_clicked()
     //AddGrid();
     scene->addEllipse(0, 0, 0.5, 0.25);
 
-    //Addelips(50, 0, 0);
-    //Addelips(55, 0, 0);
-    //Addelips(60, 0, 0);
-
 }
 
 

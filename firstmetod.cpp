@@ -18,6 +18,32 @@ firstmetod::~firstmetod()
     delete ui;
 }
 
+double firstmetod::fileprocessing(QString filelocation)
+{
+    QFile file(filelocation);
+    file.open(QIODevice::ReadOnly);
+    double curentvalue, summ=0, result; //текущее значение, сумма всех чисел и результат
+    int count=0; //количество чисел
+
+
+    QStringList lineData = QString(file.readAll()).split("\n");
+    for(int i = 0; i < lineData.length(); i++)
+    {
+        curentvalue=lineData[i].toDouble();
+        if (curentvalue>0.1)
+        {
+            continue;
+        }
+        else
+        {
+            count++;
+            summ+=curentvalue;
+        }
+    }
+    result=summ/count;
+    return (result);
+}
+
 
 void firstmetod::on_DirectoryOpen_clicked()
 {
@@ -30,6 +56,9 @@ void firstmetod::on_DirectoryOpen_clicked()
 }
 void firstmetod::on_start_clicked()
 {
+    double filevalue; //переменная для сохранения среднего значения файла
+    int count;  //переменная для сохранения номера файла из обчего списка
+    QString filelock;   //полное путь к файлу
     int countPoint=ui->countPoints->value();
     QDir dir(ui->Directory->text());
     QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
@@ -40,11 +69,39 @@ void firstmetod::on_start_clicked()
     }
     else
     {
-        for (int i=0; i<countFiles; i++)
+        ui->textBrowser->setText("Обрабатываются файлы:\n");
+        int temp=countFiles/countPoint;
+        for (int i=0; i<countPoint;i++) //проход по числу точек
         {
-            ui->textBrowser->append(fileName[i]);
+            ui->textBrowser->append("Обрабатываются файлы для точки " + QString::number(i+1) + ":");
+            for (int j=0; j<temp; j++)  //обработка по N файлов для каждой точки
+            {
+                count=temp*i+j; //нормер текущего файла
+                filelock=ui->Directory->text()+"/"+fileName[count];
+                ui->textBrowser->append(filelock);
+                filevalue=fileprocessing(filelock);
+                ui->textBrowser->append("Среднее значение файла: "+ QString::number(filevalue));
+            }
+            ui->textBrowser->append("\n");
         }
-        //ui->textBrowser->setText(QString::number(countFiles));
+
+        //отладочные строки для фикса бага с последним нулём
+        QFile file(filelock);
+        file.open(QIODevice::ReadOnly);
+        QStringList lineData = QString(file.readAll()).split("\n");
+        double curentvalue;
+        for(int i = 0; i < lineData.length(); i++)
+        {
+            curentvalue=lineData[i].toDouble();
+            if (curentvalue>0.1)
+            {
+                continue;
+            }
+            else
+            {
+                ui->textBrowser->append(QString::number(curentvalue,'g',8));
+            }
+        }
     }
 }
 
