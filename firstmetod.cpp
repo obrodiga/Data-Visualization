@@ -30,7 +30,7 @@ double firstmetod::fileprocessing(QString filelocation)
     for(int i = 0; i < lineData.length(); i++)
     {
         curentvalue=lineData[i].toDouble();
-        if (curentvalue>0.1)
+        if (curentvalue>0.1 || curentvalue==0)
         {
             continue;
         }
@@ -82,25 +82,7 @@ void firstmetod::on_start_clicked()
                 filevalue=fileprocessing(filelock);
                 ui->textBrowser->append("Среднее значение файла: "+ QString::number(filevalue));
             }
-            ui->textBrowser->append("\n");
-        }
-
-        //отладочные строки для фикса бага с последним нулём
-        QFile file(filelock);
-        file.open(QIODevice::ReadOnly);
-        QStringList lineData = QString(file.readAll()).split("\n");
-        double curentvalue;
-        for(int i = 0; i < lineData.length(); i++)
-        {
-            curentvalue=lineData[i].toDouble();
-            if (curentvalue>0.1)
-            {
-                continue;
-            }
-            else
-            {
-                ui->textBrowser->append(QString::number(curentvalue,'g',8));
-            }
+            ui->textBrowser->append("__________\n");
         }
     }
 }
