@@ -25,6 +25,8 @@ private slots:
 
     void on_start_clicked();
 
+    void on_cancel_clicked();
+
 private:
     Ui::firstmetod *ui;
 };

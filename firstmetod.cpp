@@ -11,6 +11,9 @@ firstmetod::firstmetod(QWidget *parent) :
     ui->countPoints->setMaximum(4);
     ui->countPoints->setMinimum(1);
     ui->Directory->setReadOnly(true);
+
+    ui->Directory->setToolTip("Внимнеие, измерения относяшиеся к одной точке, должны находится подряд!");
+    ui->countPoints->setToolTip("Выберете число точек, которые будут отображены на финальном гарфике");
 }
 
 firstmetod::~firstmetod()
@@ -85,5 +88,11 @@ void firstmetod::on_start_clicked()
             ui->textBrowser->append("__________\n");
         }
     }
+}
+
+
+void firstmetod::on_cancel_clicked()
+{
+    QDialog::close();
 }
 
