@@ -4,6 +4,10 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QDir>
+#include <QString>
+#include <QVector>
+
+#include <datastorage.h>
 
 namespace Ui {
 class firstmetod;
@@ -19,6 +23,8 @@ public:
 
     double fileprocessing (QString filelocation);
 
+    void saveRowToFile(QVector<double> row, QString filename, QString filelock);
+
 private slots:
 
     void on_DirectoryOpen_clicked();
@@ -26,6 +32,8 @@ private slots:
     void on_start_clicked();
 
     void on_cancel_clicked();
+
+    void on_save_clicked();
 
 private:
     Ui::firstmetod *ui;

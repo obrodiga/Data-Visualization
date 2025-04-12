@@ -10,6 +10,7 @@
 #include <QByteArray>
 #include <QMessageBox>
 #include <QString>
+#include <QVector>
 
 #include <firstmetod.h>
 
