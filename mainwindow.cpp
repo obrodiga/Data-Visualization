@@ -47,28 +47,22 @@ void MainWindow::Addelips(int diametr, int x, int y)
     scene->addEllipse(anglX, anglY, diametr, diametr);
 }
 
-void MainWindow::CreateElips (int x, int y, qreal diametr, int count)
+void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue)
 {
     QPen penBest(Qt::darkGreen), penLowest(Qt::red);
     penBest.setWidth(2);
     penLowest.setWidth(2);
-    for (int i=1; i<=count; i++)
+
+    int count=pointvalue.size();
+    int countFor=count-1;
+    ui->textBrowser->append(QString::number(count));
+    for (int i=0; i<=countFor; i++)
     {
-        int radius=diametr/2;
-        if (i==count && count==3)
-        {
-            scene->addEllipse(x-radius, y-radius, diametr, diametr, penBest);
-        }
-        else if (i==count && count==1)
-        {
-            scene->addEllipse(x-radius, y-radius, diametr, diametr, penLowest);
-        }
-        else
-        {
-            scene->addEllipse(x-radius, y-radius, diametr, diametr);
-        }
-        diametr+=7.5;
+        double temp=pointvalue[i]*100000;
+        double radius=temp/2;
+        scene->addEllipse(x-radius, y-radius, temp, temp, penBest);
     }
+
 }
 
 
@@ -99,10 +93,10 @@ void MainWindow::on_Button3_clicked()
 {
     scene->clear();
     AddGrid();
-    CreateElips(100, 100, 50, 3);
-    CreateElips(100, -100, 50, 2);
-    CreateElips(-100, 100, 50, 2);
-    CreateElips(-100, -100, 50, 1);
+    //CreateElips(100, 100, 50, 3);
+   // CreateElips(100, -100, 50, 2);
+    //CreateElips(-100, 100, 50, 2);
+    //CreateElips(-100, -100, 50, 1);
     QString text1="1";
     QGraphicsTextItem *text = scene->addText(text1);
     text->setPos(101, 101);
@@ -147,21 +141,54 @@ void MainWindow::on_guide_triggered()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QByteArray data;
-    QString FileName;
-    FileName = QFileDialog::getOpenFileName(this, tr("Open TXT File"), "", tr("TXT file (*.txt)"));
-    ui->lineEdit->setText(FileName);
-    QFile file(FileName);
+    ui->Directory->clear();
+    QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        ui->textBrowser->setPlainText("Не удалось открыть файл");
+    if (!DirectoryStr.isEmpty()) {
+        ui->Directory->setText(DirectoryStr);
     }
-    else
+
+    QString filelock;   //полное путь к файлу
+    QDir dir(ui->Directory->text());
+    QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
+    int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();
+    AddGrid();
+
+    int mass[4][2];
+    mass[0][0]=-100;
+    mass[0][1]=-100;
+    mass[1][0]=100;
+    mass[1][1]=-100;
+    mass[2][0]=-100;
+    mass[2][1]=100;
+    mass[3][0]=100;
+    mass[3][1]=100;
+
+    QVector<double> valuesForPoint; //массив для сохранения всех усреднённых значений
+    //ui->textBrowser->setText("Обрабатываются файлы:\n");
+    for (int i=0; i<countFiles;i++) //проход по числу точек
     {
-        data=file.readAll();
-        ui->textBrowser->setText(data);
+        filelock=ui->Directory->text()+"/"+fileName[i];
+        QFile file(filelock);
+        file.open(QIODevice::ReadOnly);
+        valuesForPoint.clear();
+        QStringList lineData = QString(file.readAll()).split("\n");
+        for(int i = 0; i < lineData.length(); i++)
+        {
+            if (lineData[i].toDouble()==0)
+            {
+                continue;
+            }
+            else
+            {
+                valuesForPoint.push_back(lineData[i].toDouble());
+            }
+
+        }
+        ui->textBrowser->append(QString::number(valuesForPoint.size()));
+        CreateElips(mass[i][0], mass[i][1], valuesForPoint);
     }
+
 }
 
 void MainWindow::on_openData_triggered()
