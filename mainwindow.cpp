@@ -55,7 +55,6 @@ void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue)
 
     int count=pointvalue.size();
     int countFor=count-1;
-    ui->textBrowser->append(QString::number(count));
     for (int i=0; i<=countFor; i++)
     {
         double temp=pointvalue[i]*100000;
@@ -185,7 +184,6 @@ void MainWindow::on_pushButton_clicked()
             }
 
         }
-        ui->textBrowser->append(QString::number(valuesForPoint.size()));
         CreateElips(mass[i][0], mass[i][1], valuesForPoint);
     }
 
