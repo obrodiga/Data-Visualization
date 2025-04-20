@@ -9,6 +9,7 @@ DataStorage& DataStorage::instance() {
 void DataStorage::clearData() {
     data.clear();
     maxStoredValue=0.0;
+    minStoredValue=0.0;
 }
 
 void DataStorage::addRow(const QVector<double>& row) {
@@ -28,29 +29,69 @@ int DataStorage::rowCount() const {
     return data.size();
 }
 
-double DataStorage::findAndStoreMax()
+double DataStorage::findStorageMax()
 {
-    double maxVal = std::numeric_limits<double>::lowest();  //минимально возможное значение для типа
+    double maxValue = numeric_limits<double>::lowest();  //минимально возможное значение для типа
 
-    for (int i = 0; i < data.size(); ++i)
+    for (int i = 0; i < data.size(); i++)
     {
         const QVector<double>& row = data[i];  // строка по ссылке, без копирования
 
-        for (int j = 0; j < row.size(); ++j)
+        for (int j = 0; j < row.size(); j++)
         {
             double value = row[j];
-            if (value > maxVal)
+            if (value > maxValue)
             {
-                maxVal = value;
+                maxValue = value;
             }
         }
     }
 
-    maxStoredValue = maxVal;
-    return maxVal;
+    maxStoredValue = maxValue;
+    return maxValue;
 }
 
-double DataStorage::getStoredMax() const
+double DataStorage::getStorageMax() const
 {
     return maxStoredValue;
+}
+
+double DataStorage::findStorageMin()
+{
+    double minValue;        //для сохранения минимального среди всех максимумов в точках
+    QVector<double> maxRowValue;            // сохранять максимальные значения во всех строках
+    for (int i = 0; i < data.size(); i++)
+    {
+        const QVector<double>& row = data[i];  // строка по ссылке, без копирования
+
+        double maxValue = numeric_limits<double>::lowest(); //минимально возможное значение для типа
+
+        for (int j = 0; j < row.size(); j++)
+        {
+            double value = row[j];
+            if (value > maxValue)
+            {
+                maxValue = value;
+            }
+        }
+        maxRowValue.push_back(maxValue);
+    }
+
+    double minDoubleValue = numeric_limits<double>::max();
+
+    for (int i=0; i<maxRowValue.size(); i++)
+    {
+        if (maxRowValue[i]<minDoubleValue)      //поиск наименьшего числа
+        {
+            minValue=maxRowValue[i];
+        }
+    }
+
+    minStoredValue = minValue;
+    return minValue;
+}
+
+double DataStorage::getStorageMin() const
+{
+    return minStoredValue;
 }

@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
     //настройка graphicsView
     scene=new QGraphicsScene();     // Иницализация графической сцены
     ui->graphicsView->setScene(scene);      // Установка графической сцены в graphicsView
-    //ui->graphicsView->setRenderHint(QPainter::Antialiasing);    // Устанавливаем сглаживание
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Отключаем скроллбар по вертикали
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Отключаем скроллбар по горизонтали
     scene->setSceneRect(-250,-250,500,500); // Устанавливаем область графической сцены
@@ -47,19 +46,31 @@ void MainWindow::Addelips(int diametr, int x, int y)
     scene->addEllipse(anglX, anglY, diametr, diametr);
 }
 
-void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue)
+void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int multiplier)
 {
     QPen penBest(Qt::darkGreen), penLowest(Qt::red);
     penBest.setWidth(2);
     penLowest.setWidth(2);
 
     int count=pointvalue.size();
-    int countFor=count-1;
-    for (int i=0; i<=countFor; i++)
+    double maxValue=DataStorage::instance().getStorageMax(), minValue=DataStorage::instance().getStorageMin();
+    for (int i=0; i<count; i++)
     {
-        double temp=pointvalue[i]*100000;
-        double radius=temp/2;
-        scene->addEllipse(x-radius, y-radius, temp, temp, penBest);
+        double radius=pointvalue[i]*multiplier;
+        double daimetr=radius*2;
+
+        if ((pointvalue[i]!=maxValue) && (pointvalue[i]!=minValue))
+        {
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr);
+        }
+        else if (pointvalue[i]==minValue)
+        {
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penLowest);
+        }
+        else
+        {
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penBest);
+        }
     }
 }
 
@@ -100,6 +111,9 @@ void MainWindow::on_Button3_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     ui->Directory->clear();
+    ui->textBrowser->clear();
+    DataStorage::instance().clearData();
+
     QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
     if (!DirectoryStr.isEmpty()) {
@@ -110,17 +124,18 @@ void MainWindow::on_pushButton_clicked()
     QDir dir(ui->Directory->text());
     QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
     int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();
+    int multiplier=1;    //вычисляет максимальное кол-во нулей чтобы домножать числа при отображении
     AddGrid();
 
     int mass[4][2];
-    mass[0][0]=-100;
-    mass[0][1]=-100;
-    mass[1][0]=100;
-    mass[1][1]=-100;
-    mass[2][0]=-100;
-    mass[2][1]=100;
-    mass[3][0]=100;
-    mass[3][1]=100;
+    mass[0][0]=-125;
+    mass[0][1]=-125;
+    mass[1][0]=125;
+    mass[1][1]=-125;
+    mass[2][0]=-125;
+    mass[2][1]=125;
+    mass[3][0]=125;
+    mass[3][1]=125;
 
     QVector<double> valuesForPoint; //массив для сохранения всех усреднённых значений
     for (int i=0; i<countFiles;i++) //проход по числу точек
@@ -142,11 +157,22 @@ void MainWindow::on_pushButton_clicked()
             }
 
         }
-        CreateElips(mass[i][0], mass[i][1], valuesForPoint);
+        DataStorage::instance().addRow(valuesForPoint);
         ui->textBrowser->append(filelock);
+    }
+    double maxValue=DataStorage::instance().findStorageMax();
+    double minValue=DataStorage::instance().findStorageMin();
 
+    while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
+    {
+        maxValue*=10;
+        multiplier*=10;
     }
 
+    for (int i=0; i<4; i++)
+    {
+        CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier);
+    }
 }
 
 void MainWindow::on_developer_triggered()

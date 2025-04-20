@@ -28,7 +28,7 @@ public:
     ~MainWindow();
     void AddGrid();
     void Addelips(int diametr, int x, int y);
-    void CreateElips (int x, int y, QVector<double> pointvalue);
+    void CreateElips (int x, int y, QVector<double> pointvalue, int multiplier);
 
 private slots:
     void on_Button1_clicked();
