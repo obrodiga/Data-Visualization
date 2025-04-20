@@ -61,15 +61,13 @@ void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue)
         double radius=temp/2;
         scene->addEllipse(x-radius, y-radius, temp, temp, penBest);
     }
-
 }
 
 
 void MainWindow::on_Button1_clicked()
 {
     scene->clear();
-    //AddGrid();
-    scene->addEllipse(0, 0, 0.5, 0.25);
+    scene->addEllipse(10, 10, 0.5, 0.25);
 
 }
 
@@ -92,50 +90,11 @@ void MainWindow::on_Button3_clicked()
 {
     scene->clear();
     AddGrid();
-    //CreateElips(100, 100, 50, 3);
-   // CreateElips(100, -100, 50, 2);
-    //CreateElips(-100, 100, 50, 2);
-    //CreateElips(-100, -100, 50, 1);
     QString text1="1";
     QGraphicsTextItem *text = scene->addText(text1);
     text->setPos(101, 101);
 }
 
-
-void MainWindow::on_quit_triggered()
-{
-    QApplication::quit();
-}
-
-
-void MainWindow::on_developer_triggered()
-{
-    QFile file(":/info/about.txt");
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        //ui->textBrowser->setPlainText("Не удалось открыть файл 'Информация о разработчках'");
-    }
-    else
-    {
-        QByteArray data = file.readAll();
-        QMessageBox::about(this, "Информация о разработчках", data);
-    }
-}
-
-
-void MainWindow::on_guide_triggered()
-{
-    QFile file(":/info/guid.txt");
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        //ui->textBrowser->setPlainText("Не удалось открыть файл 'Информация о разработчках'");
-    }
-    else
-    {
-        QByteArray data = file.readAll();
-        QMessageBox::about(this, "Руководство по использованию программы", data);
-    }
-}
 
 
 void MainWindow::on_pushButton_clicked()
@@ -164,7 +123,6 @@ void MainWindow::on_pushButton_clicked()
     mass[3][1]=100;
 
     QVector<double> valuesForPoint; //массив для сохранения всех усреднённых значений
-    //ui->textBrowser->setText("Обрабатываются файлы:\n");
     for (int i=0; i<countFiles;i++) //проход по числу точек
     {
         filelock=ui->Directory->text()+"/"+fileName[i];
@@ -185,8 +143,37 @@ void MainWindow::on_pushButton_clicked()
 
         }
         CreateElips(mass[i][0], mass[i][1], valuesForPoint);
+        ui->textBrowser->append(filelock);
+
     }
 
+}
+
+void MainWindow::on_developer_triggered()
+{
+    QFile file(":/info/about.txt");
+    if (file.open(QFile::ReadOnly | QFile::Text))
+    {
+        QByteArray data = file.readAll();
+        QMessageBox::about(this, "Информация о разработчках", data);
+    }
+}
+
+
+void MainWindow::on_guide_triggered()
+{
+    QFile file(":/info/guid.txt");
+    if (file.open(QFile::ReadOnly | QFile::Text))
+    {
+        QByteArray data = file.readAll();
+        QMessageBox::about(this, "Руководство по использованию программы", data);
+    }
+}
+
+
+void MainWindow::on_quit_triggered()
+{
+    QApplication::quit();
 }
 
 void MainWindow::on_openData_triggered()
