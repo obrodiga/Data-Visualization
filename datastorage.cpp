@@ -58,7 +58,7 @@ double DataStorage::getStorageMax() const
 
 double DataStorage::findStorageMin()
 {
-    double minValue;        //для сохранения минимального среди всех максимумов в точках
+    double minValue = numeric_limits<double>::max();;        //для сохранения минимального среди всех максимумов в точках
     QVector<double> maxRowValue;            // сохранять максимальные значения во всех строках
     for (int i = 0; i < data.size(); i++)
     {
@@ -77,11 +77,9 @@ double DataStorage::findStorageMin()
         maxRowValue.push_back(maxValue);
     }
 
-    double minDoubleValue = numeric_limits<double>::max();
-
     for (int i=0; i<maxRowValue.size(); i++)
     {
-        if (maxRowValue[i]<minDoubleValue)      //поиск наименьшего числа
+        if (maxRowValue[i]<minValue)      //поиск наименьшего числа
         {
             minValue=maxRowValue[i];
         }

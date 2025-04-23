@@ -162,6 +162,8 @@ void MainWindow::on_pushButton_clicked()
     }
     double maxValue=DataStorage::instance().findStorageMax();
     double minValue=DataStorage::instance().findStorageMin();
+    ui->textBrowser->append(QString::number(maxValue));
+    ui->textBrowser->append(QString::number(minValue));
 
     while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
     {
@@ -169,7 +171,7 @@ void MainWindow::on_pushButton_clicked()
         multiplier*=10;
     }
 
-    for (int i=0; i<4; i++)
+    for (int i=0; i<DataStorage::instance().rowCount(); i++)
     {
         CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier);
     }
