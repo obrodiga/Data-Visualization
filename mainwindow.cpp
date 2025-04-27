@@ -114,6 +114,7 @@ void MainWindow::on_SelectAndStart_clicked()
 {
     ui->Directory->clear();
     ui->textBrowser->clear();
+    scene->clear();
     DataStorage::instance().clearData();
 
     QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
