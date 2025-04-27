@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QString>
 #include <QVector>
+#include <QTextStream>
 
 #include <datastorage.h>
 

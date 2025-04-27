@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QVector>
-#include <QDebug>
 
 using namespace std;
 
@@ -14,13 +13,13 @@ public:
 
     void clearData();                                      // Очистить все данные
     void addRow(const QVector<double>& row);               // Добавить строку
-    QVector<double> getRow(int index) const;               // Получить строку по индексу
-    int rowCount() const;                                  // Кол-во строк
+    QVector<double> getRow(int index);               // Получить строку по индексу
+    int rowCount();                                  // Кол-во строк
 
     double findStorageMax();                              //максимум среди значений
-    double getStorageMax() const;                           //запросить максимум
+    double getStorageMax();                           //запросить максимум
     double findStorageMin();                              //минимум среди максимумов линий
-    double getStorageMin() const;                           //запросить минум
+    double getStorageMin();                           //запросить минум
 
 private:
     DataStorage() = default;

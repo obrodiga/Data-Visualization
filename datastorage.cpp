@@ -1,31 +1,38 @@
 #include "datastorage.h"
 
 
-DataStorage& DataStorage::instance() {
+DataStorage& DataStorage::instance()
+{
     static DataStorage instance;
     return instance;
 }
 
-void DataStorage::clearData() {
+void DataStorage::clearData()
+{
     data.clear();
     maxStoredValue=0.0;
     minStoredValue=0.0;
 }
 
-void DataStorage::addRow(const QVector<double>& row) {
+void DataStorage::addRow(const QVector<double>& row)
+{
     data.append(row);
 }
 
-QVector<double> DataStorage::getRow(int index) const {
-    if (index >= 0 && index < data.size()) {
+QVector<double> DataStorage::getRow(int index)
+{
+    if (index >= 0 && index < data.size())
+    {
         return data[index];
-    } else {
-        qWarning() << "Invalid row index:" << index;
+    }
+    else
+    {
         return {};
     }
 }
 
-int DataStorage::rowCount() const {
+int DataStorage::rowCount()
+{
     return data.size();
 }
 
@@ -39,10 +46,9 @@ double DataStorage::findStorageMax()
 
         for (int j = 0; j < row.size(); j++)
         {
-            double value = row[j];
-            if (value > maxValue)
+            if (row[j] > maxValue)
             {
-                maxValue = value;
+                maxValue = row[j];
             }
         }
     }
@@ -51,7 +57,7 @@ double DataStorage::findStorageMax()
     return maxValue;
 }
 
-double DataStorage::getStorageMax() const
+double DataStorage::getStorageMax()
 {
     return maxStoredValue;
 }
@@ -89,7 +95,7 @@ double DataStorage::findStorageMin()
     return minValue;
 }
 
-double DataStorage::getStorageMin() const
+double DataStorage::getStorageMin()
 {
     return minStoredValue;
 }

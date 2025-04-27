@@ -24,6 +24,50 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//временные функции, удалятся из финальной версии
+
+void MainWindow::Addelips(int diametr, int x, int y)
+{
+    int temp=diametr/2;
+    int anglX=x-temp;
+    int anglY=y-temp;
+    scene->addEllipse(anglX, anglY, diametr, diametr);
+}
+
+
+void MainWindow::on_Button1_clicked()
+{
+    scene->clear();
+    scene->addEllipse(10, 10, 0.5, 0.25);
+
+}
+
+void MainWindow::on_Button2_clicked()
+{
+    scene->clear();
+    AddGrid();
+
+    scene->addEllipse(50, 50, 50, 50);
+    scene->addEllipse(50, 50, 55, 55);
+    scene->addEllipse(50, 50, 60, 60);
+
+    scene->addEllipse(-100, -100, 50, 50);
+    scene->addEllipse(-100, -100, 55, 55);
+}
+
+
+void MainWindow::on_Button3_clicked()
+{
+    scene->clear();
+    AddGrid();
+    QString text1="1";
+    QGraphicsTextItem *text = scene->addText(text1);
+    text->setPos(101, 101);
+}
+
+
+//______________
+
 void MainWindow::AddGrid()
 {
     int j=-250;
@@ -36,14 +80,6 @@ void MainWindow::AddGrid()
 
     scene->addLine(0, 250, 0, -250, QPen(Qt::black));
     scene->addLine(250, 0, -250, 0, QPen(Qt::black));
-}
-
-void MainWindow::Addelips(int diametr, int x, int y)
-{
-    int temp=diametr/2;
-    int anglX=x-temp;
-    int anglY=y-temp;
-    scene->addEllipse(anglX, anglY, diametr, diametr);
 }
 
 void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int multiplier)
@@ -74,41 +110,7 @@ void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int mult
     }
 }
 
-
-void MainWindow::on_Button1_clicked()
-{
-    scene->clear();
-    scene->addEllipse(10, 10, 0.5, 0.25);
-
-}
-
-
-void MainWindow::on_Button2_clicked()
-{
-    scene->clear();
-    AddGrid();
-
-    scene->addEllipse(50, 50, 50, 50);
-    scene->addEllipse(50, 50, 55, 55);
-    scene->addEllipse(50, 50, 60, 60);
-
-    scene->addEllipse(-100, -100, 50, 50);
-    scene->addEllipse(-100, -100, 55, 55);
-}
-
-
-void MainWindow::on_Button3_clicked()
-{
-    scene->clear();
-    AddGrid();
-    QString text1="1";
-    QGraphicsTextItem *text = scene->addText(text1);
-    text->setPos(101, 101);
-}
-
-
-
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_SelectAndStart_clicked()
 {
     ui->Directory->clear();
     ui->textBrowser->clear();
@@ -116,7 +118,8 @@ void MainWindow::on_pushButton_clicked()
 
     QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
-    if (!DirectoryStr.isEmpty()) {
+    if (!DirectoryStr.isEmpty())
+    {
         ui->Directory->setText(DirectoryStr);
     }
 
@@ -127,7 +130,7 @@ void MainWindow::on_pushButton_clicked()
     int multiplier=1;    //вычисляет максимальное кол-во нулей чтобы домножать числа при отображении
     AddGrid();
 
-    int mass[4][2];
+    int mass[4][2];         //центры окружностей
     mass[0][0]=-125;
     mass[0][1]=-125;
     mass[1][0]=125;
@@ -137,7 +140,7 @@ void MainWindow::on_pushButton_clicked()
     mass[3][0]=125;
     mass[3][1]=125;
 
-    QVector<double> valuesForPoint; //массив для сохранения всех усреднённых значений
+    QVector<double> valuesForPoint; //массив для сохранения значений из файла
     for (int i=0; i<countFiles;i++) //проход по числу точек
     {
         filelock=ui->Directory->text()+"/"+fileName[i];
@@ -158,12 +161,9 @@ void MainWindow::on_pushButton_clicked()
 
         }
         DataStorage::instance().addRow(valuesForPoint);
-        ui->textBrowser->append(filelock);
     }
     double maxValue=DataStorage::instance().findStorageMax();
     double minValue=DataStorage::instance().findStorageMin();
-    ui->textBrowser->append(QString::number(maxValue));
-    ui->textBrowser->append(QString::number(minValue));
 
     while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
     {

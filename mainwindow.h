@@ -43,7 +43,7 @@ private slots:
 
     void on_guide_triggered();
 
-    void on_pushButton_clicked();
+    void on_SelectAndStart_clicked();
 
     void on_openData_triggered();
 

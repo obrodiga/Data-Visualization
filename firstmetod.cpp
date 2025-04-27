@@ -33,7 +33,7 @@ double firstmetod::fileprocessing(QString filelocation)
     for(int i = 0; i < lineData.length(); i++)
     {
         curentvalue=lineData[i].toDouble();
-        if (curentvalue>0.1 || curentvalue==0)
+        if (curentvalue>0.1 || curentvalue==0)          //провеврка на соответсвие пороговому значению и пустую строку
         {
             continue;
         }
@@ -51,35 +51,35 @@ void firstmetod::saveRowToFile(QVector<double> row, QString filename, QString fi
 {
     QString filefolder=filelock+"/"+filename;
     QFile file(filefolder);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
         QTextStream out(&file);
-        for (double value : row) {
+        for (double value : row)
+        {
             out << value << "\n";
         }
         file.close();
-        qDebug() << "Saved row to" << filename;
-    } else {
-        qWarning() << "Failed to open file:" << filename;
     }
 }
-
 
 void firstmetod::on_DirectoryOpen_clicked()
 {
     ui->Directory->clear();
     QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
-    if (!DirectoryStr.isEmpty()) {
+    if (!DirectoryStr.isEmpty())
+    {
        ui->Directory->setText(DirectoryStr);
     }
 }
+
 void firstmetod::on_start_clicked()
 {
     DataStorage::instance().clearData();    //очистка массива с хранимыми данными
 
     double filevalue; //переменная для сохранения среднего значения файла
-    int count;  //переменная для сохранения номера файла из обчего списка
-    QString filelock;   //полное путь к файлу
+    int count;  //переменная для сохранения номера файла из общего списка
+    QString filelock;   //строка для сохранения полного/абсолютного пути к файлу
     int countPoint=ui->countPoints->value();
     QDir dir(ui->Directory->text());
     QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
@@ -93,7 +93,7 @@ void firstmetod::on_start_clicked()
         QVector<double> valuesForPoint; //массив для сохранения всех усреднённых значений
         ui->textBrowser->setText("Обрабатываются файлы:\n");
         int temp=countFiles/countPoint;
-        for (int i=0; i<countPoint;i++) //проход по числу точек
+        for (int i=0; i<countPoint;i++) //проход по всем файлам
         {
             valuesForPoint.clear(); //очистка вектора
             ui->textBrowser->append("Обрабатываются файлы для точки " + QString::number(i+1) + ":");
@@ -112,12 +112,10 @@ void firstmetod::on_start_clicked()
     }
 }
 
-
 void firstmetod::on_cancel_clicked()
 {
     QDialog::close();
 }
-
 
 void firstmetod::on_save_clicked()
 {
@@ -125,7 +123,6 @@ void firstmetod::on_save_clicked()
     QDir dir(ui->Directory->text());
     dir.mkdir("2");
     QString filedir=ui->Directory->text()+"/2";
-    qDebug() <<filedir;
     for (i = 0; i < countPoints; ++i)
     {
         QVector<double> row = DataStorage::instance().getRow(i);
