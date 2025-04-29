@@ -35,8 +35,6 @@ private slots:
 
     void on_Button2_clicked();
 
-    void on_Button3_clicked();
-
     void on_quit_triggered();
 
     void on_developer_triggered();
@@ -46,6 +44,8 @@ private slots:
     void on_SelectAndStart_clicked();
 
     void on_openData_triggered();
+
+    void on_toggleResize_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;

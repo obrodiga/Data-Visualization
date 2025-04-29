@@ -7,8 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->resize(575,850);          // Задание размера окна
-    this->setFixedSize(575,850);    // Фиксация размера окна
+    this->resize(575,660);          // Задание размера окна
+    this->setFixedSize(575,660);    // Фиксация размера окна
+    ui->textBrowser->setVisible(false);
 
     //настройка graphicsView
     scene=new QGraphicsScene();     // Иницализация графической сцены
@@ -54,17 +55,6 @@ void MainWindow::on_Button2_clicked()
     scene->addEllipse(-100, -100, 50, 50);
     scene->addEllipse(-100, -100, 55, 55);
 }
-
-
-void MainWindow::on_Button3_clicked()
-{
-    scene->clear();
-    AddGrid();
-    QString text1="1";
-    QGraphicsTextItem *text = scene->addText(text1);
-    text->setPos(101, 101);
-}
-
 
 //______________
 
@@ -178,6 +168,22 @@ void MainWindow::on_SelectAndStart_clicked()
     }
 }
 
+void MainWindow::on_toggleResize_toggled(bool checked)
+{
+    if (checked==true)
+    {
+        this->resize(575,850);          // Задание размера окна
+        this->setFixedSize(575,850);    // Фиксация размера окна
+        ui->textBrowser->setVisible(true);
+    }
+    else
+    {
+        this->resize(575,660);          // Задание размера окна
+        this->setFixedSize(575,660);    // Фиксация размера окна
+        ui->textBrowser->setVisible(false);
+    }
+}
+
 void MainWindow::on_developer_triggered()
 {
     QFile file(":/info/about.txt");
@@ -209,4 +215,3 @@ void MainWindow::on_openData_triggered()
 {
     firstMetod.exec();
 }
-

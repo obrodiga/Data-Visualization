@@ -43,6 +43,16 @@
      </layout>
     </item>
     <item>
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="Button1">
@@ -65,23 +75,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="Button3">
+       <widget class="QPushButton" name="toggleResize">
         <property name="text">
-         <string>PushButton</string>
+         <string>Построение графиков</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
     </item>
     <item>
      <widget class="QTextBrowser" name="textBrowser">
