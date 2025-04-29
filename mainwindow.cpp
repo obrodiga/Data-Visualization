@@ -153,16 +153,38 @@ void MainWindow::on_toggleResize_toggled(bool checked)
 {
     if (checked==true)
     {
+        //настройка виджета
         this->resize(575,850);          // Задание размера окна
         this->setFixedSize(575,850);    // Фиксация размера окна
+        ui->grafik->clearGraphs();
         ui->grafik->setVisible(true);
+
+        //заготовка для графов
+        int countPoints, xBegin=0, xEnd;    //количество точек, начало и конец промежутков по X
+        double h=0.1, yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.2; //шаг между точками при постороении, нижная и верхняя граница по Y
+        ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
+
         QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penThird(Qt::darkBlue), penfourth(Qt::darkGray);
-        enum Pens {penFirst, penSecond};
+
+        QVector<double> xPoints;
+        for (int i=0; i<DataStorage::instance().getRow(0).size();i++)
+        {
+            xPoints.push_back(i);
+        }
+        ui->grafik->xAxis->setRange(0, xPoints.size());
+
+        for (int i=0; i<DataStorage::instance().rowCount();i++)
+        {
+            ui->grafik->addGraph();
+            ui->grafik->graph(i)->addData(xPoints, DataStorage::instance().getRow(i));
+        }
+        ui->grafik->replot();       //отрисовка графика
     }
     else
     {
         this->resize(575,650);          // Задание размера окна
         this->setFixedSize(575,650);    // Фиксация размера окна
+        ui->grafik->clearGraphs();
         ui->grafik->setVisible(false);
     }
 }
