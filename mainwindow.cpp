@@ -7,9 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->resize(575,660);          // Задание размера окна
-    this->setFixedSize(575,660);    // Фиксация размера окна
-    ui->textBrowser->setVisible(false);
+    this->resize(575,650);          // Задание размера окна
+    this->setFixedSize(575,650);    // Фиксация размера окна
+    ui->grafik->setVisible(false);
+    ui->toggleResize->setEnabled(false);        //кнопка изначально заблокирована, после ввода данных - доступна
 
     //настройка graphicsView
     scene=new QGraphicsScene();     // Иницализация графической сцены
@@ -33,27 +34,6 @@ void MainWindow::Addelips(int diametr, int x, int y)
     int anglX=x-temp;
     int anglY=y-temp;
     scene->addEllipse(anglX, anglY, diametr, diametr);
-}
-
-
-void MainWindow::on_Button1_clicked()
-{
-    scene->clear();
-    scene->addEllipse(10, 10, 0.5, 0.25);
-
-}
-
-void MainWindow::on_Button2_clicked()
-{
-    scene->clear();
-    AddGrid();
-
-    scene->addEllipse(50, 50, 50, 50);
-    scene->addEllipse(50, 50, 55, 55);
-    scene->addEllipse(50, 50, 60, 60);
-
-    scene->addEllipse(-100, -100, 50, 50);
-    scene->addEllipse(-100, -100, 55, 55);
 }
 
 //______________
@@ -89,13 +69,13 @@ void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int mult
         {
             scene->addEllipse(x-radius, y-radius, daimetr, daimetr);
         }
-        else if (pointvalue[i]==minValue)
+        else if (pointvalue[i]==maxValue)
         {
-            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penLowest);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penBest);
         }
         else
         {
-            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penBest);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penLowest);
         }
     }
 }
@@ -103,9 +83,10 @@ void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int mult
 void MainWindow::on_SelectAndStart_clicked()
 {
     ui->Directory->clear();
-    ui->textBrowser->clear();
     scene->clear();
     DataStorage::instance().clearData();
+
+    ui->toggleResize->setEnabled(true);     //разблокировка кнопки для создания графиков
 
     QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
@@ -174,18 +155,21 @@ void MainWindow::on_toggleResize_toggled(bool checked)
     {
         this->resize(575,850);          // Задание размера окна
         this->setFixedSize(575,850);    // Фиксация размера окна
-        ui->textBrowser->setVisible(true);
+        ui->grafik->setVisible(true);
+        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penThird(Qt::darkBlue), penfourth(Qt::darkGray);
+        enum Pens {penFirst, penSecond};
     }
     else
     {
-        this->resize(575,660);          // Задание размера окна
-        this->setFixedSize(575,660);    // Фиксация размера окна
-        ui->textBrowser->setVisible(false);
+        this->resize(575,650);          // Задание размера окна
+        this->setFixedSize(575,650);    // Фиксация размера окна
+        ui->grafik->setVisible(false);
     }
 }
 
 void MainWindow::on_developer_triggered()
 {
+
     QFile file(":/info/about.txt");
     if (file.open(QFile::ReadOnly | QFile::Text))
     {

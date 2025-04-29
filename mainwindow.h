@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
+#include <qcustomplot.h>
 
 #include <QFile>
 #include <QFileDialog>
@@ -11,6 +12,8 @@
 #include <QMessageBox>
 #include <QString>
 #include <QVector>
+#include <QWidget>
+#include <QList>
 
 #include <firstmetod.h>
 #include <datastorage.h>
@@ -31,9 +34,6 @@ public:
     void CreateElips (int x, int y, QVector<double> pointvalue, int multiplier);
 
 private slots:
-    void on_Button1_clicked();
-
-    void on_Button2_clicked();
 
     void on_quit_triggered();
 
