@@ -86,66 +86,65 @@ void MainWindow::on_SelectAndStart_clicked()
     scene->clear();
     DataStorage::instance().clearData();
 
-    ui->toggleResize->setEnabled(true);     //разблокировка кнопки для создания графиков
-
     QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
     if (!DirectoryStr.isEmpty())
     {
         ui->Directory->setText(DirectoryStr);
-    }
+        ui->toggleResize->setEnabled(true);     //разблокировка кнопки для создания графиков
+        QString filelock;   //полное путь к файлу
+        QDir dir(ui->Directory->text());
+        QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
+        int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();
+        int multiplier=1;    //вычисляет максимальное кол-во нулей чтобы домножать числа при отображении
 
-    QString filelock;   //полное путь к файлу
-    QDir dir(ui->Directory->text());
-    QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
-    int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();
-    int multiplier=1;    //вычисляет максимальное кол-во нулей чтобы домножать числа при отображении
-    AddGrid();
+        AddGrid();
 
-    int mass[4][2];         //центры окружностей
-    mass[0][0]=-125;
-    mass[0][1]=-125;
-    mass[1][0]=125;
-    mass[1][1]=-125;
-    mass[2][0]=-125;
-    mass[2][1]=125;
-    mass[3][0]=125;
-    mass[3][1]=125;
+        int mass[4][2];         //центры окружностей
+        mass[0][0]=-125;
+        mass[0][1]=-125;
+        mass[1][0]=125;
+        mass[1][1]=-125;
+        mass[2][0]=-125;
+        mass[2][1]=125;
+        mass[3][0]=125;
+        mass[3][1]=125;
 
-    QVector<double> valuesForPoint; //массив для сохранения значений из файла
-    for (int i=0; i<countFiles;i++) //проход по числу точек
-    {
-        filelock=ui->Directory->text()+"/"+fileName[i];
-        QFile file(filelock);
-        file.open(QIODevice::ReadOnly);
-        valuesForPoint.clear();
-        QStringList lineData = QString(file.readAll()).split("\n");
-        for(int i = 0; i < lineData.length(); i++)
+        QVector<double> valuesForPoint; //массив для сохранения значений из файла
+        for (int i=0; i<countFiles;i++) //проход по числу точек
         {
-            if (lineData[i].toDouble()==0)
+            filelock=ui->Directory->text()+"/"+fileName[i];
+            QFile file(filelock);
+            file.open(QIODevice::ReadOnly);
+            valuesForPoint.clear();
+            QStringList lineData = QString(file.readAll()).split("\n");
+            for(int i = 0; i < lineData.length(); i++)
             {
-                continue;
-            }
-            else
-            {
-                valuesForPoint.push_back(lineData[i].toDouble());
-            }
+                if (lineData[i].toDouble()==0)
+                {
+                    continue;
+                }
+                else
+                {
+                    valuesForPoint.push_back(lineData[i].toDouble());
+                }
 
+            }
+            DataStorage::instance().addRow(valuesForPoint);
         }
-        DataStorage::instance().addRow(valuesForPoint);
-    }
-    double maxValue=DataStorage::instance().findStorageMax();
-    double minValue=DataStorage::instance().findStorageMin();
+        double maxValue=DataStorage::instance().findStorageMax();
+        double minValue=DataStorage::instance().findStorageMin();
 
-    while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
-    {
-        maxValue*=10;
-        multiplier*=10;
-    }
+        while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
+        {
+            maxValue*=10;
+            multiplier*=10;
+        }
 
-    for (int i=0; i<DataStorage::instance().rowCount(); i++)
-    {
-        CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier);
+        for (int i=0; i<DataStorage::instance().rowCount(); i++)
+        {
+            CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier);
+        }
     }
 }
 
@@ -160,24 +159,36 @@ void MainWindow::on_toggleResize_toggled(bool checked)
         ui->grafik->setVisible(true);
 
         //заготовка для графов
-        int countPoints, xBegin=0, xEnd;    //количество точек, начало и конец промежутков по X
-        double h=0.1, yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.2; //шаг между точками при постороении, нижная и верхняя граница по Y
+        int xBegin=0, xEnd;    //начало и конец промежутков по X
+        double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.2; // нижная и верхняя граница по Y
         ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
 
-        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penThird(Qt::darkBlue), penfourth(Qt::darkGray);
+        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);
 
         QVector<double> xPoints;
-        for (int i=0; i<DataStorage::instance().getRow(0).size();i++)
+        for (int i=0; i<DataStorage::instance().getRow(0).size();i++)   //подсчёт кол-ва элементов в первой строке
         {
             xPoints.push_back(i);
         }
-        ui->grafik->xAxis->setRange(0, xPoints.size());
+        xEnd=xPoints.size()-1;
+        ui->grafik->xAxis->setRange(xBegin, xEnd);
 
         for (int i=0; i<DataStorage::instance().rowCount();i++)
         {
             ui->grafik->addGraph();
             ui->grafik->graph(i)->addData(xPoints, DataStorage::instance().getRow(i));
+            ui->grafik->graph(i)->setName("Точка "+QString::number(i+1));
+            switch(i)
+            {
+            case 0: ui->grafik->graph(i)->setPen(penfirst); break;
+            case 1: ui->grafik->graph(i)->setPen(pensecond); break;
+            case 2: ui->grafik->graph(i)->setPen(penthird); break;
+            case 3: ui->grafik->graph(i)->setPen(penfourth); break;
+            default: QPen pendefault(Qt::black); ui->grafik->graph(i)->setPen(pendefault); break;
+            }
         }
+        ui->grafik->yAxis->setLabel("Значения в точках");
+        ui->grafik->legend->setVisible(true);
         ui->grafik->replot();       //отрисовка графика
     }
     else
