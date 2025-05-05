@@ -121,8 +121,14 @@ void firstmetod::on_save_clicked()
 {
     int i, countPoints=DataStorage::instance().rowCount();
     QDir dir(ui->Directory->text());
-    dir.mkdir("2");
+    bool flag=dir.mkdir("2");           //создания подпапки "2", если папка существует или не создалась, - вернёт false
     QString filedir=ui->Directory->text()+"/2";
+    QDir tempdir(filedir);
+    if (flag==false && tempdir.exists() && tempdir.entryList(QStringList()<<"*.txt", QDir::Files).count()!=0)
+    {
+        tempdir.removeRecursively();
+        dir.mkdir("2");
+    }
     for (i = 0; i < countPoints; ++i)
     {
         QVector<double> row = DataStorage::instance().getRow(i);

@@ -133,7 +133,7 @@ void MainWindow::on_SelectAndStart_clicked()
             DataStorage::instance().addRow(valuesForPoint);
         }
         double maxValue=DataStorage::instance().findStorageMax();
-        double minValue=DataStorage::instance().findStorageMin();
+        DataStorage::instance().findStorageMin();
 
         while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
         {
@@ -160,7 +160,7 @@ void MainWindow::on_toggleResize_toggled(bool checked)
 
         //заготовка для графов
         int xBegin=0, xEnd;    //начало и конец промежутков по X
-        double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.2; // нижная и верхняя граница по Y
+        double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.5; // нижная и верхняя граница по Y
         ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
 
         QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);

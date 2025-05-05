@@ -62,7 +62,7 @@ double DataStorage::getStorageMax()
     return maxStoredValue;
 }
 
-double DataStorage::findStorageMin()
+void DataStorage::findStorageMin()
 {
     double minValue = numeric_limits<double>::max();;        //для сохранения минимального среди всех максимумов в точках
     QVector<double> maxRowValue;            // сохранять максимальные значения во всех строках
@@ -92,7 +92,6 @@ double DataStorage::findStorageMin()
     }
 
     minStoredValue = minValue;
-    return minValue;
 }
 
 double DataStorage::getStorageMin()

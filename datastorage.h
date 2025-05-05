@@ -18,7 +18,7 @@ public:
 
     double findStorageMax();                              //максимум среди значений
     double getStorageMax();                           //запросить максимум
-    double findStorageMin();                              //минимум среди максимумов линий
+    void findStorageMin();                              //минимум среди максимумов линий
     double getStorageMin();                           //запросить минум
 
 private:
