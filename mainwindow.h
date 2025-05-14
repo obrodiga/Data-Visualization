@@ -15,6 +15,8 @@
 #include <QWidget>
 #include <QList>
 
+#include <QProcess>
+
 #include <firstmetod.h>
 #include <datastorage.h>
 
@@ -46,6 +48,8 @@ private slots:
     void on_openData_triggered();
 
     void on_toggleResize_toggled(bool checked);
+
+    void on_actionTest_triggered();
 
 private:
     Ui::MainWindow *ui;

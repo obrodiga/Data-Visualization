@@ -101,6 +101,7 @@
      <string>Инструменты</string>
     </property>
     <addaction name="openData"/>
+    <addaction name="actionTest"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -124,6 +125,11 @@
   <action name="openData">
    <property name="text">
     <string>Подготовка данных</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>Test</string>
    </property>
   </action>
  </widget>

@@ -36,6 +36,37 @@ void MainWindow::Addelips(int diametr, int x, int y)
     scene->addEllipse(anglX, anglY, diametr, diametr);
 }
 
+void MainWindow::on_actionTest_triggered()
+{
+    QString programdir = QCoreApplication::applicationDirPath() + "/2";
+    QString program = programdir + "/ApplicationDemoDiplom.exe";
+    QFile file(programdir+"/b10001.txt");
+    file.open(QIODevice::ReadOnly);
+    QStringList lineData = QString(file.readAll()).split("\n");
+
+    QProcess *process = new QProcess(this);
+
+    // слот для чтения вывода
+    connect(process, &QProcess::readyReadStandardOutput, [&]()
+    {
+        QByteArray output = process->readAllStandardOutput();
+        QString result(output.trimmed());
+        QString filefolder=programdir+"/output.txt";
+        QFile file(filefolder);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QTextStream out(&file);
+            out <<result;
+            file.close();
+        }
+    });
+
+    //Запускаем процесс
+    process->start(program, lineData);
+    process->waitForFinished();
+}
+
+
 //______________
 
 void MainWindow::AddGrid()
