@@ -6,6 +6,7 @@ firstmetod::firstmetod(QWidget *parent) :
     ui(new Ui::firstmetod)
 {
     ui->setupUi(this);
+    setWindowTitle("Математическая обработка данных");
     this->resize(400,390);          // Задание размера окна
     this->setFixedSize(400,390);
     ui->countPoints->setMaximum(4);

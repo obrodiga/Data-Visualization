@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowTitle("Анализ и сравнение данных");
+
     this->resize(575,650);          // Задание размера окна
     this->setFixedSize(575,650);    // Фиксация размера окна
     ui->grafik->setVisible(false);
