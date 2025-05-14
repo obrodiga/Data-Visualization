@@ -7,13 +7,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->resize(575,850);          // Задание размера окна
-    this->setFixedSize(575,850);    // Фиксация размера окна
+    this->resize(575,650);          // Задание размера окна
+    this->setFixedSize(575,650);    // Фиксация размера окна
+    ui->grafik->setVisible(false);
+    ui->toggleResize->setEnabled(false);        //кнопка изначально заблокирована, после ввода данных - доступна
 
     //настройка graphicsView
     scene=new QGraphicsScene();     // Иницализация графической сцены
     ui->graphicsView->setScene(scene);      // Установка графической сцены в graphicsView
-    //ui->graphicsView->setRenderHint(QPainter::Antialiasing);    // Устанавливаем сглаживание
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Отключаем скроллбар по вертикали
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Отключаем скроллбар по горизонтали
     scene->setSceneRect(-250,-250,500,500); // Устанавливаем область графической сцены
@@ -24,6 +25,18 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+//временные функции, удалятся из финальной версии
+
+void MainWindow::Addelips(int diametr, int x, int y)
+{
+    int temp=diametr/2;
+    int anglX=x-temp;
+    int anglY=y-temp;
+    scene->addEllipse(anglX, anglY, diametr, diametr);
+}
+
+//______________
 
 void MainWindow::AddGrid()
 {
@@ -39,94 +52,159 @@ void MainWindow::AddGrid()
     scene->addLine(250, 0, -250, 0, QPen(Qt::black));
 }
 
-void MainWindow::Addelips(int diametr, int x, int y)
-{
-    int temp=diametr/2;
-    int anglX=x-temp;
-    int anglY=y-temp;
-    scene->addEllipse(anglX, anglY, diametr, diametr);
-}
-
-void MainWindow::CreateElips (int x, int y, qreal diametr, int count)
+void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int multiplier)
 {
     QPen penBest(Qt::darkGreen), penLowest(Qt::red);
     penBest.setWidth(2);
     penLowest.setWidth(2);
-    for (int i=1; i<=count; i++)
+
+    int count=pointvalue.size();
+    double maxValue=DataStorage::instance().getStorageMax(), minValue=DataStorage::instance().getStorageMin();
+    for (int i=0; i<count; i++)
     {
-        int radius=diametr/2;
-        if (i==count && count==3)
+        double radius=pointvalue[i]*multiplier;
+        double daimetr=radius*2;
+
+        if ((pointvalue[i]!=maxValue) && (pointvalue[i]!=minValue))
         {
-            scene->addEllipse(x-radius, y-radius, diametr, diametr, penBest);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr);
         }
-        else if (i==count && count==1)
+        else if (pointvalue[i]==maxValue)
         {
-            scene->addEllipse(x-radius, y-radius, diametr, diametr, penLowest);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penBest);
         }
         else
         {
-            scene->addEllipse(x-radius, y-radius, diametr, diametr);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penLowest);
         }
-        diametr+=7.5;
     }
 }
 
-
-void MainWindow::on_Button1_clicked()
+void MainWindow::on_SelectAndStart_clicked()
 {
+    ui->Directory->clear();
     scene->clear();
-    //AddGrid();
-    scene->addEllipse(0, 0, 0.5, 0.25);
+    DataStorage::instance().clearData();
 
-    //Addelips(50, 0, 0);
-    //Addelips(55, 0, 0);
-    //Addelips(60, 0, 0);
+    QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
 
+    if (!DirectoryStr.isEmpty())
+    {
+        ui->Directory->setText(DirectoryStr);
+        ui->toggleResize->setEnabled(true);     //разблокировка кнопки для создания графиков
+        QString filelock;   //полное путь к файлу
+        QDir dir(ui->Directory->text());
+        QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
+        int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();
+        int multiplier=1;    //вычисляет максимальное кол-во нулей чтобы домножать числа при отображении
+
+        AddGrid();
+
+        int mass[4][2];         //центры окружностей
+        mass[0][0]=-125;
+        mass[0][1]=-125;
+        mass[1][0]=125;
+        mass[1][1]=-125;
+        mass[2][0]=-125;
+        mass[2][1]=125;
+        mass[3][0]=125;
+        mass[3][1]=125;
+
+        QVector<double> valuesForPoint; //массив для сохранения значений из файла
+        for (int i=0; i<countFiles;i++) //проход по числу точек
+        {
+            filelock=ui->Directory->text()+"/"+fileName[i];
+            QFile file(filelock);
+            file.open(QIODevice::ReadOnly);
+            valuesForPoint.clear();
+            QStringList lineData = QString(file.readAll()).split("\n");
+            for(int i = 0; i < lineData.length(); i++)
+            {
+                if (lineData[i].toDouble()==0)
+                {
+                    continue;
+                }
+                else
+                {
+                    valuesForPoint.push_back(lineData[i].toDouble());
+                }
+
+            }
+            DataStorage::instance().addRow(valuesForPoint);
+        }
+        double maxValue=DataStorage::instance().findStorageMax();
+        DataStorage::instance().findStorageMin();
+
+        while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
+        {
+            maxValue*=10;
+            multiplier*=10;
+        }
+
+        for (int i=0; i<DataStorage::instance().rowCount(); i++)
+        {
+            CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier);
+        }
+    }
 }
 
-
-void MainWindow::on_Button2_clicked()
+void MainWindow::on_toggleResize_toggled(bool checked)
 {
-    scene->clear();
-    AddGrid();
+    if (checked==true)
+    {
+        //настройка виджета
+        this->resize(575,850);          // Задание размера окна
+        this->setFixedSize(575,850);    // Фиксация размера окна
+        ui->grafik->clearGraphs();
+        ui->grafik->setVisible(true);
 
-    scene->addEllipse(50, 50, 50, 50);
-    scene->addEllipse(50, 50, 55, 55);
-    scene->addEllipse(50, 50, 60, 60);
+        //заготовка для графов
+        int xBegin=0, xEnd;    //начало и конец промежутков по X
+        double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.5; // нижная и верхняя граница по Y
+        ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
 
-    scene->addEllipse(-100, -100, 50, 50);
-    scene->addEllipse(-100, -100, 55, 55);
+        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);
+
+        QVector<double> xPoints;
+        for (int i=0; i<DataStorage::instance().getRow(0).size();i++)   //подсчёт кол-ва элементов в первой строке
+        {
+            xPoints.push_back(i);
+        }
+        xEnd=xPoints.size()-1;
+        ui->grafik->xAxis->setRange(xBegin, xEnd);
+
+        for (int i=0; i<DataStorage::instance().rowCount();i++)
+        {
+            ui->grafik->addGraph();
+            ui->grafik->graph(i)->addData(xPoints, DataStorage::instance().getRow(i));
+            ui->grafik->graph(i)->setName("Точка "+QString::number(i+1));
+            switch(i)
+            {
+            case 0: ui->grafik->graph(i)->setPen(penfirst); break;
+            case 1: ui->grafik->graph(i)->setPen(pensecond); break;
+            case 2: ui->grafik->graph(i)->setPen(penthird); break;
+            case 3: ui->grafik->graph(i)->setPen(penfourth); break;
+            default: QPen pendefault(Qt::black); ui->grafik->graph(i)->setPen(pendefault); break;
+            }
+        }
+        ui->grafik->yAxis->setLabel("Значения в точках");
+        ui->grafik->legend->setVisible(true);
+        ui->grafik->replot();       //отрисовка графика
+    }
+    else
+    {
+        this->resize(575,650);          // Задание размера окна
+        this->setFixedSize(575,650);    // Фиксация размера окна
+        ui->grafik->clearGraphs();
+        ui->grafik->setVisible(false);
+    }
 }
-
-
-void MainWindow::on_Button3_clicked()
-{
-    scene->clear();
-    AddGrid();
-    CreateElips(100, 100, 50, 3);
-    CreateElips(100, -100, 50, 2);
-    CreateElips(-100, 100, 50, 2);
-    CreateElips(-100, -100, 50, 1);
-    QString text1="1";
-    QGraphicsTextItem *text = scene->addText(text1);
-    text->setPos(101, 101);
-}
-
-
-void MainWindow::on_quit_triggered()
-{
-    QApplication::quit();
-}
-
 
 void MainWindow::on_developer_triggered()
 {
+
     QFile file(":/info/about.txt");
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        //ui->textBrowser->setPlainText("Не удалось открыть файл 'Информация о разработчках'");
-    }
-    else
+    if (file.open(QFile::ReadOnly | QFile::Text))
     {
         QByteArray data = file.readAll();
         QMessageBox::about(this, "Информация о разработчках", data);
@@ -137,11 +215,7 @@ void MainWindow::on_developer_triggered()
 void MainWindow::on_guide_triggered()
 {
     QFile file(":/info/guid.txt");
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        //ui->textBrowser->setPlainText("Не удалось открыть файл 'Информация о разработчках'");
-    }
-    else
+    if (file.open(QFile::ReadOnly | QFile::Text))
     {
         QByteArray data = file.readAll();
         QMessageBox::about(this, "Руководство по использованию программы", data);
@@ -149,27 +223,12 @@ void MainWindow::on_guide_triggered()
 }
 
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_quit_triggered()
 {
-    QByteArray data;
-    QString FileName;
-    FileName = QFileDialog::getOpenFileName(this, tr("Open TXT File"), "", tr("TXT file (*.txt)"));
-    ui->lineEdit->setText(FileName);
-    QFile file(FileName);
-
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        ui->textBrowser->setPlainText("Не удалось открыть файл");
-    }
-    else
-    {
-        data=file.readAll();
-        ui->textBrowser->setText(data);
-    }
+    QApplication::quit();
 }
 
 void MainWindow::on_openData_triggered()
 {
     firstMetod.exec();
 }
-

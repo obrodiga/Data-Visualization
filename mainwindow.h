@@ -4,14 +4,19 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
+#include <qcustomplot.h>
 
 #include <QFile>
 #include <QFileDialog>
 #include <QByteArray>
 #include <QMessageBox>
 #include <QString>
+#include <QVector>
+#include <QWidget>
+#include <QList>
 
 #include <firstmetod.h>
+#include <datastorage.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,14 +31,9 @@ public:
     ~MainWindow();
     void AddGrid();
     void Addelips(int diametr, int x, int y);
-    void CreateElips (int x, int y, qreal diametr, int count);
+    void CreateElips (int x, int y, QVector<double> pointvalue, int multiplier);
 
 private slots:
-    void on_Button1_clicked();
-
-    void on_Button2_clicked();
-
-    void on_Button3_clicked();
 
     void on_quit_triggered();
 
@@ -41,9 +41,11 @@ private slots:
 
     void on_guide_triggered();
 
-    void on_pushButton_clicked();
+    void on_SelectAndStart_clicked();
 
     void on_openData_triggered();
+
+    void on_toggleResize_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
