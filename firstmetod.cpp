@@ -66,7 +66,7 @@ void firstmetod::saveRowToFile(QVector<double> row, QString filename, QString fi
 void firstmetod::on_DirectoryOpen_clicked()
 {
     ui->Directory->clear();
-    QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
+    QString DirectoryStr=QFileDialog::getExistingDirectory(this, tr("Выбор каталога"), "C:/Users");
 
     if (!DirectoryStr.isEmpty())
     {

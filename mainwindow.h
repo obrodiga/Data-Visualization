@@ -15,9 +15,8 @@
 #include <QWidget>
 #include <QList>
 
-#include <QProcess>
-
 #include <firstmetod.h>
+#include <external_method.h>
 #include <datastorage.h>
 
 QT_BEGIN_NAMESPACE
@@ -56,6 +55,7 @@ private:
     QGraphicsScene *scene;
     QGraphicsTextItem *text;
     firstmetod firstMetod;
+    external_method externalMethod;
 
 };
 #endif // MAINWINDOW_H

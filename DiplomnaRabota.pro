@@ -1,5 +1,8 @@
 QT       += core gui printsupport
 
+TARGET = Data_Analysis
+TEMPLATE = app
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -10,6 +13,7 @@ CONFIG += c++17
 
 SOURCES += \
     datastorage.cpp \
+    external_method.cpp \
     firstmetod.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -17,11 +21,13 @@ SOURCES += \
 
 HEADERS += \
     datastorage.h \
+    external_method.h \
     firstmetod.h \
     mainwindow.h \
     qcustomplot.h
 
 FORMS += \
+    external_method.ui \
     firstmetod.ui \
     mainwindow.ui
 

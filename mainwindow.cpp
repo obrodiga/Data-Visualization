@@ -40,32 +40,7 @@ void MainWindow::Addelips(int diametr, int x, int y)
 
 void MainWindow::on_actionTest_triggered()
 {
-    QString programdir = QCoreApplication::applicationDirPath() + "/2";
-    QString program = programdir + "/ApplicationDemoDiplom.exe";
-    QFile file(programdir+"/b10001.txt");
-    file.open(QIODevice::ReadOnly);
-    QStringList lineData = QString(file.readAll()).split("\n");
-
-    QProcess *process = new QProcess(this);
-
-    // слот для чтения вывода
-    connect(process, &QProcess::readyReadStandardOutput, [&]()
-    {
-        QByteArray output = process->readAllStandardOutput();
-        QString result(output.trimmed());
-        QString filefolder=programdir+"/output.txt";
-        QFile file(filefolder);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            QTextStream out(&file);
-            out <<result;
-            file.close();
-        }
-    });
-
-    //Запускаем процесс
-    process->start(program, lineData);
-    process->waitForFinished();
+    externalMethod.show();
 }
 
 
@@ -119,7 +94,7 @@ void MainWindow::on_SelectAndStart_clicked()
     scene->clear();
     DataStorage::instance().clearData();
 
-    QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
+    QString DirectoryStr=QFileDialog::getExistingDirectory(this, tr("Выбор каталога"), "C:/Users");
 
     if (!DirectoryStr.isEmpty())
     {
@@ -191,15 +166,16 @@ void MainWindow::on_toggleResize_toggled(bool checked)
         ui->grafik->clearGraphs();
         ui->grafik->setVisible(true);
 
+        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);
+
         //заготовка для графов
         int xBegin=0, xEnd;    //начало и конец промежутков по X
         double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.5; // нижная и верхняя граница по Y
         ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
 
-        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);
-
-        QVector<double> xPoints;
-        for (int i=0; i<DataStorage::instance().getRow(0).size();i++)   //подсчёт кол-ва элементов в первой строке
+        int xCount=DataStorage::instance().maxElementCount();
+        QVector<double> xPoints;       //массив элементов по оси Х
+        for (int i=0; i<xCount;i++)   //заполнение
         {
             xPoints.push_back(i);
         }

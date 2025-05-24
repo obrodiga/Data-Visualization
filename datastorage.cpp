@@ -12,6 +12,7 @@ void DataStorage::clearData()
     data.clear();
     maxStoredValue=0.0;
     minStoredValue=0.0;
+    maxElementCountInRow=0;
 }
 
 void DataStorage::addRow(const QVector<double>& row)
@@ -97,4 +98,21 @@ void DataStorage::findStorageMin()
 double DataStorage::getStorageMin()
 {
     return minStoredValue;
+}
+
+int DataStorage::maxElementCount()
+{
+    if (maxElementCountInRow==0)
+    {
+        int count=0;  //для хранения максимального числа элементов в строке
+        for (int i=0; i<data.size(); i++)
+        {
+            if (data[i].size()>count)
+            {
+                count=data[i].size();
+            }
+        }
+        maxElementCountInRow=count;
+    }
+    return maxElementCountInRow;
 }
