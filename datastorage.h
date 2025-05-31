@@ -17,15 +17,17 @@ public:
     int rowCount();                                  // Кол-во строк
 
     double findStorageMax();                              //максимум среди значений
-    double getStorageMax();                           //запросить максимум
-    void findStorageMin();                              //минимум среди максимумов линий
-    double getStorageMin();                           //запросить минум
+    double getStorageMax();                           //запросить maxStoredValue
+    void findStorageMin();                              //минимум среди максимумов
+    double getStorageMin();                           //запросить minStoredValue
+    int maxElementCount();              //максимальное число элементов в строке
 
 private:
     DataStorage() = default;
     QVector<QVector<double>> data;                         // Хранилище данных
     double maxStoredValue = 0.0;                           // Максимальное значение, если =0, - невычислили или хранилище пусто
     double minStoredValue = 0.0;                           // Минимальное значение среди максимумов, если =0, - невычислили или хранилище пусто
+    int maxElementCountInRow=0;                              // Максимальное число элементов в строке
 };
 
 #endif // DATASTORAGE_H

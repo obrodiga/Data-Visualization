@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowTitle("Анализ и сравнение данных");
+
     this->resize(575,650);          // Задание размера окна
     this->setFixedSize(575,650);    // Фиксация размера окна
     ui->grafik->setVisible(false);
@@ -28,12 +30,9 @@ MainWindow::~MainWindow()
 
 //временные функции, удалятся из финальной версии
 
-void MainWindow::Addelips(int diametr, int x, int y)
+void MainWindow::on_actionTest_triggered()
 {
-    int temp=diametr/2;
-    int anglX=x-temp;
-    int anglY=y-temp;
-    scene->addEllipse(anglX, anglY, diametr, diametr);
+    externalMethod.show();
 }
 
 //______________
@@ -41,41 +40,41 @@ void MainWindow::Addelips(int diametr, int x, int y)
 void MainWindow::AddGrid()
 {
     int j=-250;
-    QPen penGray(Qt::gray);
-    for (int i=-250; i<=250; i+=50)
+    QPen penGray(Qt::gray); //установка серого цвета кисти
+    for (int i=-250; i<=250; i+=50) //проход и рисование линий каждые 50 пикселей
     {
         scene->addLine(i, j, i, j+500, penGray);
         scene->addLine(j, i, j+500, i, penGray);
     }
 
-    scene->addLine(0, 250, 0, -250, QPen(Qt::black));
+    scene->addLine(0, 250, 0, -250, QPen(Qt::black));       //осевые разделительные линий по нулевым осям
     scene->addLine(250, 0, -250, 0, QPen(Qt::black));
 }
 
 void MainWindow::CreateElips (int x, int y, QVector<double> pointvalue, int multiplier)
 {
-    QPen penBest(Qt::darkGreen), penLowest(Qt::red);
-    penBest.setWidth(2);
+    QPen penBest(Qt::darkGreen), penLowest(Qt::red);    //кисти для лучшего и худшего значения
+    penBest.setWidth(2);    //установка толщины линий кистей
     penLowest.setWidth(2);
 
     int count=pointvalue.size();
-    double maxValue=DataStorage::instance().getStorageMax(), minValue=DataStorage::instance().getStorageMin();
-    for (int i=0; i<count; i++)
+    double maxValue=DataStorage::instance().getStorageMax(), minValue=DataStorage::instance().getStorageMin();  //получение значений
+    for (int i=0; i<count; i++)     //проход по всему массиву и визуализация
     {
-        double radius=pointvalue[i]*multiplier;
-        double daimetr=radius*2;
+        double radius=pointvalue[i]*multiplier; //увеличение значения в multiplier раз
+        double daimetr=radius*2;    //диаметр для визуализации
 
         if ((pointvalue[i]!=maxValue) && (pointvalue[i]!=minValue))
         {
-            scene->addEllipse(x-radius, y-radius, daimetr, daimetr);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr);    //если не подходит под максимум и минимум среди максимумов
         }
         else if (pointvalue[i]==maxValue)
         {
-            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penBest);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penBest);   //если максимум
         }
         else
         {
-            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penLowest);
+            scene->addEllipse(x-radius, y-radius, daimetr, daimetr, penLowest); //если минимум
         }
     }
 }
@@ -86,7 +85,7 @@ void MainWindow::on_SelectAndStart_clicked()
     scene->clear();
     DataStorage::instance().clearData();
 
-    QString DirectoryStr=QFileDialog::getExistingDirectory(0, "Выбор каталога", ui->Directory->text());
+    QString DirectoryStr=QFileDialog::getExistingDirectory(this, tr("Выбор каталога"), "C:/Users"); //открытие проводника для выбора директории  со стартовым каталогом "C:/Users"
 
     if (!DirectoryStr.isEmpty())
     {
@@ -94,8 +93,8 @@ void MainWindow::on_SelectAndStart_clicked()
         ui->toggleResize->setEnabled(true);     //разблокировка кнопки для создания графиков
         QString filelock;   //полное путь к файлу
         QDir dir(ui->Directory->text());
-        QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);
-        int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();
+        QStringList fileName=dir.entryList(QStringList()<<"*.txt", QDir::Files);    //получение списка из названия всех файлов в директории с расширением txt
+        int countFiles=dir.entryList(QStringList()<<"*.txt", QDir::Files).count();  //число файлов с расширением txt
         int multiplier=1;    //вычисляет максимальное кол-во нулей чтобы домножать числа при отображении
 
         AddGrid();
@@ -126,13 +125,12 @@ void MainWindow::on_SelectAndStart_clicked()
                 }
                 else
                 {
-                    valuesForPoint.push_back(lineData[i].toDouble());
+                    valuesForPoint.push_back(lineData[i].toDouble());   //сохранение во временный массив значения преобразованного из QString в double
                 }
-
             }
             DataStorage::instance().addRow(valuesForPoint);
         }
-        double maxValue=DataStorage::instance().findStorageMax();
+        double maxValue=DataStorage::instance().findStorageMax();   //вызов метода для определения максимум в хранилище
         DataStorage::instance().findStorageMin();
 
         while (maxValue<=12.5)  //подсчёт сколько раз можно умножить на 10, чтоб не выйти за границы квадранта
@@ -143,60 +141,61 @@ void MainWindow::on_SelectAndStart_clicked()
 
         for (int i=0; i<DataStorage::instance().rowCount(); i++)
         {
-            CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier);
+            CreateElips(mass[i][0], mass[i][1], DataStorage::instance().getRow(i), multiplier); //вызов функции построения окружностей с передачей центральной точки, массива значений и множителя
         }
     }
 }
 
 void MainWindow::on_toggleResize_toggled(bool checked)
 {
-    if (checked==true)
+    if (checked==true)  //если кнопка нажата
     {
         //настройка виджета
         this->resize(575,850);          // Задание размера окна
         this->setFixedSize(575,850);    // Фиксация размера окна
         ui->grafik->clearGraphs();
-        ui->grafik->setVisible(true);
+        ui->grafik->setVisible(true);   //отображение поля для графиков
+
+        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);  //кисти для рисования
 
         //заготовка для графов
-        int xBegin=0, xEnd;    //начало и конец промежутков по X
+        int xBegin=1, xEnd;    //начало и конец промежутков по X
         double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.5; // нижная и верхняя граница по Y
         ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
 
-        QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);
-
-        QVector<double> xPoints;
-        for (int i=0; i<DataStorage::instance().getRow(0).size();i++)   //подсчёт кол-ва элементов в первой строке
+        int xCount=DataStorage::instance().maxElementCount();
+        QVector<double> xPoints;       //массив элементов по оси Х
+        for (int i=1; i<=xCount;i++)   //заполнение
         {
             xPoints.push_back(i);
         }
-        xEnd=xPoints.size()-1;
-        ui->grafik->xAxis->setRange(xBegin, xEnd);
+        xEnd=xPoints.size();
+        ui->grafik->xAxis->setRange(xBegin, xEnd);  //ограничения оси Х
 
         for (int i=0; i<DataStorage::instance().rowCount();i++)
         {
-            ui->grafik->addGraph();
-            ui->grafik->graph(i)->addData(xPoints, DataStorage::instance().getRow(i));
+            ui->grafik->addGraph();     //создание поля для графиков
+            ui->grafik->graph(i)->addData(xPoints, DataStorage::instance().getRow(i));  //добавление одной строки из массива и массива точек Х
             ui->grafik->graph(i)->setName("Точка "+QString::number(i+1));
-            switch(i)
+            switch(i)   //определение цвета графика
             {
             case 0: ui->grafik->graph(i)->setPen(penfirst); break;
             case 1: ui->grafik->graph(i)->setPen(pensecond); break;
             case 2: ui->grafik->graph(i)->setPen(penthird); break;
             case 3: ui->grafik->graph(i)->setPen(penfourth); break;
-            default: QPen pendefault(Qt::black); ui->grafik->graph(i)->setPen(pendefault); break;
+            default: QPen pendefault(Qt::black); ui->grafik->graph(i)->setPen(pendefault); break;   //если графиков много, они рисуются чёрным цветом
             }
         }
-        ui->grafik->yAxis->setLabel("Значения в точках");
-        ui->grafik->legend->setVisible(true);
+        ui->grafik->yAxis->setLabel("Значения в точках");   //подпись оси У
+        ui->grafik->legend->setVisible(true);               //видимость легенды
         ui->grafik->replot();       //отрисовка графика
     }
-    else
+    else    //если кнопку отжали
     {
         this->resize(575,650);          // Задание размера окна
         this->setFixedSize(575,650);    // Фиксация размера окна
-        ui->grafik->clearGraphs();
-        ui->grafik->setVisible(false);
+        ui->grafik->clearGraphs();      //очистка поля для грфиков
+        ui->grafik->setVisible(false);  //скрытие элемента
     }
 }
 
@@ -207,7 +206,7 @@ void MainWindow::on_developer_triggered()
     if (file.open(QFile::ReadOnly | QFile::Text))
     {
         QByteArray data = file.readAll();
-        QMessageBox::about(this, "Информация о разработчках", data);
+        QMessageBox::about(this, "Информация о разработчках", data);    //отображение файла с информацией о разработчиках
     }
 }
 
@@ -218,17 +217,17 @@ void MainWindow::on_guide_triggered()
     if (file.open(QFile::ReadOnly | QFile::Text))
     {
         QByteArray data = file.readAll();
-        QMessageBox::about(this, "Руководство по использованию программы", data);
+        QMessageBox::about(this, "Руководство по использованию программы", data);   //отображение файла с руководством пользователя
     }
 }
 
 
 void MainWindow::on_quit_triggered()
 {
-    QApplication::quit();
+    QApplication::quit();       //кнопка закрыть в контекстном меню
 }
 
 void MainWindow::on_openData_triggered()
 {
-    firstMetod.exec();
+    firstMetod.exec();      //запуск вшитого обработчика данных
 }

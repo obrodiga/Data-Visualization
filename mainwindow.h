@@ -13,9 +13,9 @@
 #include <QString>
 #include <QVector>
 #include <QWidget>
-#include <QList>
 
 #include <firstmetod.h>
+#include <external_method.h>
 #include <datastorage.h>
 
 QT_BEGIN_NAMESPACE
@@ -29,9 +29,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void AddGrid();
-    void Addelips(int diametr, int x, int y);
-    void CreateElips (int x, int y, QVector<double> pointvalue, int multiplier);
+    void AddGrid();     //создание сетки
+    void CreateElips (int x, int y, QVector<double> pointvalue, int multiplier);    //рисование множества элипсов в одной точке
 
 private slots:
 
@@ -47,11 +46,14 @@ private slots:
 
     void on_toggleResize_toggled(bool checked);
 
+    void on_actionTest_triggered();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QGraphicsTextItem *text;
     firstmetod firstMetod;
+    external_method externalMethod;
 
 };
 #endif // MAINWINDOW_H
