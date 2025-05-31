@@ -169,17 +169,17 @@ void MainWindow::on_toggleResize_toggled(bool checked)
         QPen penfirst(Qt::darkGreen), pensecond(Qt::darkRed), penthird(Qt::darkBlue), penfourth(Qt::darkGray);
 
         //заготовка для графов
-        int xBegin=0, xEnd;    //начало и конец промежутков по X
+        int xBegin=1, xEnd;    //начало и конец промежутков по X
         double yMin=0.0, yMax=DataStorage::instance().getStorageMax()*1.5; // нижная и верхняя граница по Y
         ui->grafik->yAxis->setRange(yMin, yMax);   //установка границ по У
 
         int xCount=DataStorage::instance().maxElementCount();
         QVector<double> xPoints;       //массив элементов по оси Х
-        for (int i=0; i<xCount;i++)   //заполнение
+        for (int i=1; i<=xCount;i++)   //заполнение
         {
             xPoints.push_back(i);
         }
-        xEnd=xPoints.size()-1;
+        xEnd=xPoints.size();
         ui->grafik->xAxis->setRange(xBegin, xEnd);
 
         for (int i=0; i<DataStorage::instance().rowCount();i++)

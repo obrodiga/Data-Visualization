@@ -1,6 +1,6 @@
 QT       += core gui printsupport
 
-TARGET = Data_Analysis
+TARGET = DiagnosticSubsystem
 TEMPLATE = app
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

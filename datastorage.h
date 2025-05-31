@@ -17,10 +17,10 @@ public:
     int rowCount();                                  // Кол-во строк
 
     double findStorageMax();                              //максимум среди значений
-    double getStorageMax();                           //запросить максимум
-    void findStorageMin();                              //минимум среди максимумов линий
-    double getStorageMin();                           //запросить минум
-    int maxElementCount();
+    double getStorageMax();                           //запросить maxStoredValue
+    void findStorageMin();                              //минимум среди максимумов
+    double getStorageMin();                           //запросить minStoredValue
+    int maxElementCount();              //максимальное число элементов в строке
 
 private:
     DataStorage() = default;

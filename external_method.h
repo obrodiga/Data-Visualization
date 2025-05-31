@@ -36,6 +36,8 @@ private slots:
 
     void on_save_clicked();
 
+    void on_cancel_clicked();
+
 private:
     Ui::external_method *ui;
 };
