@@ -22,9 +22,9 @@ public:
     explicit firstmetod(QWidget *parent = nullptr);
     ~firstmetod();
 
-    double fileprocessing (QString filelocation);
+    double fileprocessing (QString filelocation);   //обработчик файлов
 
-    void saveRowToFile(QVector<double> row, QString filename, QString filelock);
+    void saveRowToFile(QVector<double> row, QString filename, QString filelock);    //сохранение в файл
 
 private slots:
 
