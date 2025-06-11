@@ -28,15 +28,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//временные функции, удалятся из финальной версии
-
-void MainWindow::on_actionTest_triggered()
-{
-    externalMethod.show();
-}
-
-//______________
-
 void MainWindow::AddGrid()
 {
     int j=-250;
@@ -230,4 +221,9 @@ void MainWindow::on_quit_triggered()
 void MainWindow::on_openData_triggered()
 {
     firstMetod.exec();      //запуск вшитого обработчика данных
+}
+
+void MainWindow::on_actionTest_triggered()
+{
+    externalMethod.show();  //запуск внешнего модуля обработчика
 }
