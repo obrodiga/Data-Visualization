@@ -6,7 +6,7 @@ external_method::external_method(QWidget *parent) :
     ui(new Ui::external_method)
 {
     ui->setupUi(this);
-    setWindowTitle("Обработка данный внешним модулем"); //название окна
+    setWindowTitle("Обработка данных внешним модулем"); //название окна
     ui->countPoints->setMaximum(4); //ограничение на поле для чисел: от 1 до 4
     ui->countPoints->setMinimum(1);
     ui->save->setEnabled(false);    //блокировка кнопки "сохранить"
